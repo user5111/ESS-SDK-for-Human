@@ -97,6 +97,8 @@ def FindService(username, dict_userid, session):
             url = tag['onclick']
             url = url.split(';')[1].split('\'')[1]
             url_params = parse_qs(urlparse(url).query,True)
+            for key, value in url_params.items():
+                url_params[key] = value[0]
             url_params.update(dict_userid)
             urls[tag.string]=url_params
         except:
