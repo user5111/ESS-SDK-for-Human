@@ -110,13 +110,20 @@ def FindService(username, dict_userid, session):
 
 
 def LoginEssSystem(username, departId, password, session):
-    dict_userid=Init(username,password)
+    dict_userid=Init(username,departId)
     random_code = GetRandomImage(session)
     LoginSystem(username,password,random_code,session)
-    page = FindService(username,dict_userid,session)
-    return page
-
-
+    urls = FindService(username,dict_userid,session)
+    return urls
+def LoginService(urls, ServiceName, session):
+    ###############################
+    # LoginService(urls, '局方停机', session)
+    ###############################
+    session.get(
+        'https://123.125.98.209/custserv',
+        params=urls[ServiceName], 
+        headers={'Referer':'https://123.125.98.209/essframe?service=page/Sidebar'}, 
+        verify=False)
 
 if __name__ == '__main__':
     USERNAME = 'wangping80'
@@ -124,4 +131,5 @@ if __name__ == '__main__':
     PASSWORD = 'aUiJOHzTKG1V/avl/jU3gMdE+Ns='
     session = requests.Session()
     urls = LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
+    LoginService(urls, '局方停机', session)
 
