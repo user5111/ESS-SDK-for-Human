@@ -20,17 +20,18 @@ urls = login.LoginEssSystem(USERNAME, DEPARTID, PASSWORD, session)
 login.LoginService(urls, '局方停机', session)
 for number in numbers:
     custinfos = custinfo.GetCustinfoByNum(number, session)
-    DATA = {'PSPT_ID':custinfos['cust_id'],'CUSTNAME':custinfos['cust_name'],'globalPageName':'popupdialog.PersonCardReaderSX'}
     r = session.post(
         'https://123.125.98.209/custserv',
         params = {'service':'swallow/popupdialog.PersonCardReaderSX/checkPsptInfo/1'},
-        headers = {'Referer': 'https://123.125.98.209/custserv'},
-        data = DATA,
+        headers = {'Referer': 'https://123.125.98.209/custserv',
+                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                   },
+        data = {'PSPT_ID':custinfos['cust_id'],
+                'CUST_NAME':custinfos['cust_name'],
+                'globalPageName':'popupdialog.PersonCardReaderSX'
+                },
         verify = False
         )
-    image = Image,open(BytesIO(r.content))
-    image.show()
-
 
     print(custinfos)
 	

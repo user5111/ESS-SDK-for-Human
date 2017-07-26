@@ -26,7 +26,7 @@ def GetCustinfoByNum(number, session):
             verify=False,
             headers = {'Referer': 'https://123.125.98.209/custserv'}
             )
-	soup = BeautifulSoup(r.text,'lxml')
+	soup = BeautifulSoup(r.text,'html5lib')
 	try:
 		custinfo['cust_id'] = soup.find(id='PSPT_ID')['value']
 		custinfo['cust_name'] = soup.find(id='CUST_NAME')['value']
