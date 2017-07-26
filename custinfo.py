@@ -38,6 +38,20 @@ def GetCustinfoByNum(number, session):
 def CheckCustId():
     pass
 
+def GetCustPhotoById(custid):
+        r = session.post(
+                'https://123.125.98.209/custserv',
+                params = {'service':'page/personalserv.print.PrintHtmlShowImage',
+                          'listener':'showImage',
+                          'GET_TYPE':'1',
+                          'PID':custid
+                          },
+                headers = {'Referer': 'https://123.125.98.209/custserv',
+                           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                           },
+                verify = False
+                )
+
 if __name__ == '__main__':
     USERNAME = 'wangping80'
     DEPARTID = '11a0271'
@@ -45,5 +59,5 @@ if __name__ == '__main__':
     session = requests.Session()
     urls = login.LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
     login.LoginService(urls, '局方停机', session)
-    custinfo = GetCustinfoByNum('15611144389', session)
-    print(custinfo)
+    custinfos = GetCustinfoByNum('15611144389', session)
+    GetCustPhotoById(custinfos['cust_id'])
