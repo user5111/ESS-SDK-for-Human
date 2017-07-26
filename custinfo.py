@@ -28,12 +28,15 @@ def GetCustinfoByNum(number, session):
             )
 	soup = BeautifulSoup(r.text,'lxml')
 	try:
-		custinfo['customer_idnum'] = soup.find(id='PSPT_ID')['value']
-		custinfo['customer_name'] = soup.find(id='CUST_NAME')['value']
-		custinfo['customer_address'] = soup.find(id='PSPT_ADDR')['value']
+		custinfo['cust_id'] = soup.find(id='PSPT_ID')['value']
+		custinfo['cust_name'] = soup.find(id='CUST_NAME')['value']
+		custinfo['cust_address'] = soup.find(id='PSPT_ADDR')['value']
 		return custinfo
 	except Exception as e:
 		return ERROR_TAG
+
+def CheckCustId():
+    pass
 
 if __name__ == '__main__':
     USERNAME = 'wangping80'
