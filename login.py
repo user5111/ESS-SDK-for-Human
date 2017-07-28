@@ -120,7 +120,7 @@ def LoginService(urls, ServiceName, session):
     # LoginService(urls, '局方停机', session)
     ###############################
     session.get(
-        'https://123.125.98.209/custserv',
+        'https://123.125.98.209/stat',
         params=urls[ServiceName], 
         headers={'Referer':'https://123.125.98.209/essframe?service=page/Sidebar'}, 
         verify=False)
