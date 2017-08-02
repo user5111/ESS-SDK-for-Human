@@ -115,14 +115,14 @@ def LoginEssSystem(username, departId, password, session):
     LoginSystem(username,password,random_code,session)
     urls = FindService(username,dict_userid,session)
     return urls
-def LoginService(urls, ServiceName, session):
+def LoginService(urls, ServiceName, part, session):
     ###############################
-    # LoginService(urls, '局方停机', session)
+    # LoginService(urls, '局方停机', 'personalserv', session)
     ###############################
     session.get(
         'https://123.125.98.209/stat',
         params=urls[ServiceName], 
-        headers={'Referer':'https://123.125.98.209/essframe?service=page/Sidebar'}, 
+        headers={'Referer':'https://123.125.98.209/essframe?service=page/'+ part}, 
         verify=False)
 
 if __name__ == '__main__':
@@ -131,5 +131,5 @@ if __name__ == '__main__':
     PASSWORD = 'aUiJOHzTKG1V/avl/jU3gMdE+Ns='
     session = requests.Session()
     urls = LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
-    LoginService(urls, '局方停机', session)
+    LoginService(urls, '局方停机','personalserv', session)
 
