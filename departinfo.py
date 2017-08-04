@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
         session = requests.Session()
         urls = login.LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
-        login.LoginService(urls, 'ESS业务受理明细查询','Sidebar', session)
+        login.LoginService(urls, 'ESS业务受理明细查询','stat', session)
         sales_details = getDepartSalesDetails(depart_id, search_date, session)
 
         def sales_details_filter(sales_detail):

@@ -20,7 +20,7 @@ search_date = '2017-07-30'
 
 session = requests.Session()
 urls = login.LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
-login.LoginService(urls, 'ESS业务受理明细查询', session)
+login.LoginService(urls, 'ESS业务受理明细查询','stat', session)
 sales_details = departinfo.getDepartSalesDetails(depart_id, search_date, session)
 
 def sales_details_filter(sales_detail):
@@ -29,6 +29,7 @@ sales_details = list(filter(sales_details_filter,sales_details))
 
 for sales_detail in sales_details:
     print(sales_detail['用户号码'])
+    login.LoginService(urls, '局方停机','custserv', session)
     custinfos = custinfo.GetCustinfoByNum(sales_detail['用户号码'], session)
     print(custinfos)
 

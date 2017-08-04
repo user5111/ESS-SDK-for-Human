@@ -58,6 +58,6 @@ if __name__ == '__main__':
     PASSWORD = 'aUiJOHzTKG1V/avl/jU3gMdE+Ns='
     session = requests.Session()
     urls = login.LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
-    login.LoginService(urls, '局方停机','personalserv', session)
+    login.LoginService(urls, '局方停机','custserv', session)
     custinfos = GetCustinfoByNum('15611144389', session)
     #GetCustPhotoById(custinfos['cust_id'])
