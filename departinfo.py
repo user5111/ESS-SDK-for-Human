@@ -4,6 +4,7 @@
 # Created on 2017-08-02 11:30:00
 
 from datetime import datetime ,timedelta
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -108,8 +109,10 @@ def getDepartSalesDetails(depart_id, search_date, session):
                 sales_details.append(detail)
         return sales_details
 
-def sales_details_filter(sales_detail):
+def sales_details_type_filter(sales_detail):
     return sales_detail['业务类型'] == '开户' or  sales_detail['业务类型'] == '用户资料返档'
+def sales_details_cellphone_filter(sales_detail):
+    return re.match('^1[3|4|5|7|8][0-9]{9}$', sales_detail['用户号码'])
     
 def handle_date(begin_date, end_date):
     beginDate = datetime.strptime(begin_date, '%Y-%m-%d').date()
@@ -120,7 +123,8 @@ def getSalesDetailsByDate(begin_date, end_date, depart_id, session, urls):
     sales_details_part = sales_details = []
     for search_date in handle_date(begin_date, end_date):
         sales_detail = getDepartSalesDetails(depart_id, search_date, session)
-        sales_details_part = list(filter(sales_details_filter,sales_detail))
+        sales_details_part = list(filter(sales_details_type_filter,sales_detail))
+        sales_details_part = list(filter(sales_details_cellphone_filter,sales_details_part))
         for sales_detail in sales_details_part:            
             login.LoginService(urls, '局方停机','custserv', session)
             custinfos = custinfo.GetCustinfoByNum(sales_detail['用户号码'], session)
@@ -130,7 +134,7 @@ def getSalesDetailsByDate(begin_date, end_date, depart_id, session, urls):
                     sales_detail['客户姓名'] = custinfos['cust_name']
                     sales_detail['证件地址'] = custinfos['cust_address']
                     sales_details.append(sales_detail)
-                    #print(sales_detail['用户号码'])
+                    #print(sales_detail['证件号码'])
             except:
                     sales_detail['客户姓名'] = 'NO CUST INFO FOR THIS NUMBER'
                     sales_details.append(sales_detail)

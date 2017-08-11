@@ -3,54 +3,86 @@
 # Author: Wang Wentao
 # Created on 2017-07-24 16:00:00
 
+from io import BytesIO
+from PIL import Image
+
 import requests
 from bs4 import BeautifulSoup
 
 import login
 
 def GetCustinfoByNum(number, session):
-	custinfo = {}
-	ERROR_TAG = 'NO CUSTOMER INFO FOR THIS NUMBER'
-	DATA = {
-    	"SERIAL_NUMBER":str(number),
-    	"_rightCode":"csForceModifyStopTrade",
-    	"service":"direct/1/personalserv.changesvcstate.changesvcstate/$MobTrade.$Form$0",
-    	"_tradeBase":"H4sIAAAAAAAAAFvzloG1fAJDX7VSSJCji2t8SGSAa7yzv4urkpWhsZmOUmaeb35KqjMQK1kpGSjpKAX5h4a4xrsGOAY5e0QCxZ72TH+ya83THU0gOU93jxCobqXkYrf8ouRUoPbMtMrgkvyCkKJEoCk6UIs8XYBq4LzgEMeQ0GCgSGZeZolSLQDy/uOZlgAAAA==",
-    	"Form0":"ORDER_MGR,RElA_TRADE_ID,ORDER_TYPE,SUPPORT_TAG,COMM_SHARE_NBR_STRING,AC_INFOS,FORGIFT_USER_ID,QUERY_ACCOUNT_ID,_rightCode,inModeCode,NET_TYPE_CODE,SERIAL_NUMBER,subQueryTrade",
-    	"sp":"S0",
-    	"subQueryTrade":"%B2%E9%D1%AF",
-    	"inModeCode":"0"}
-	r = session.post(
-            'https://123.125.98.209/custserv',
-            data = DATA,
-            verify=False,
-            headers = {'Referer': 'https://123.125.98.209/custserv'}
-            )
-	soup = BeautifulSoup(r.text,'html5lib')
-	try:
-		custinfo['cust_id'] = soup.find(id='PSPT_ID')['value']
-		custinfo['cust_name'] = soup.find(id='CUST_NAME')['value']
-		custinfo['cust_address'] = soup.find(id='PSPT_ADDR')['value']
-		return custinfo
-	except Exception as e:
-		return ERROR_TAG
+        custinfo = {}
+        ERROR_TAG = 'NO CUSTOMER INFO FOR THIS NUMBER'
+        DATA = {
+                "SERIAL_NUMBER":str(number),
+                "_rightCode":"csForceModifyStopTrade",
+                "service":"direct/1/personalserv.changesvcstate.changesvcstate/$MobTrade.$Form$0",
+                "_tradeBase":"H4sIAAAAAAAAAFvzloG1fAJDX7VSSJCji2t8SGSAa7yzv4urkpWhsZmOUmaeb35KqjMQK1kpGSjpKAX5h4a4xrsGOAY5e0QCxZ72TH+ya83THU0gOU93jxCobqXkYrf8ouRUoPbMtMrgkvyCkKJEoCk6UIs8XYBq4LzgEMeQ0GCgSGZeZolSLQDy/uOZlgAAAA==",
+                "Form0":"ORDER_MGR,RElA_TRADE_ID,ORDER_TYPE,SUPPORT_TAG,COMM_SHARE_NBR_STRING,AC_INFOS,FORGIFT_USER_ID,QUERY_ACCOUNT_ID,_rightCode,inModeCode,NET_TYPE_CODE,SERIAL_NUMBER,subQueryTrade",
+                "sp":"S0",
+                "subQueryTrade":"%B2%E9%D1%AF",
+                "inModeCode":"0"}
+        r = session.post(
+                'https://123.125.98.209/custserv',
+                data = DATA,
+                verify=False,
+                headers = {'Referer': 'https://123.125.98.209/custserv'}
+                )
+        soup = BeautifulSoup(r.text,'html5lib')
+        try:
+                custinfo['cust_id'] = soup.find(id='PSPT_ID')['value']
+                custinfo['cust_name'] = soup.find(id='CUST_NAME')['value']
+                custinfo['cust_address'] = soup.find(id='PSPT_ADDR')['value']
+                #print(custinfo)
+                return custinfo
+        except Exception as e:
+                return ERROR_TAG
+
 
 def CheckCustId():
     pass
 
-def GetCustPhotoById(custid):
-        r = session.post(
-                'https://123.125.98.209/custserv',
-                params = {'service':'page/personalserv.print.PrintHtmlShowImage',
-                          'listener':'showImage',
-                          'GET_TYPE':'1',
-                          'PID':custid
-                          },
-                headers = {'Referer': 'https://123.125.98.209/custserv',
-                           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                           },
-                verify = False
-                )
+def GetCustIdPhotoById(custid, session, fileaddr='/Users/wangwentao/Desktop/new-id/'):
+        try:
+                r = session.get(
+                        'https://123.125.98.209/custserv',
+                        params = {'service':'page/personalserv.print.PrintHtmlShowImage',
+                                  'listener':'showImage',
+                                  'GET_TYPE':'1',
+                                  'PID':custid
+                                  },
+                        headers = {'Referer': 'https://123.125.98.209/custserv',
+                                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                                   },
+                        verify = False
+                        )
+                img = Image.open(BytesIO(r.content))
+                img.save(fileaddr+ custid +'.png','png')
+                return img
+        except:
+                print('ERROR for IDphoto')
+
+def GetCustLivePhotoBySerialNumber(serial_number,session,fileaddr='/Users/wangwentao/Desktop/new-id/'):
+        try:
+                r = session.get(
+                        'https://123.125.98.209/custserv',
+                        params = {'service':'page/personalserv.print.QueryUserPhoto',
+                                  'listener':'showImage',
+                                  'num':'1',
+                                  'TID':serial_number
+                                  },
+                        headers = {'Referer': 'https://123.125.98.209/custserv',
+                                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                                   },
+                        verify = False
+                        )
+                img = Image.open(BytesIO(r.content))
+                img.save(fileaddr+ serial_number +'.png','png')
+                return img
+        except:
+                print('ERROR for livephoto')
+
 
 if __name__ == '__main__':
     USERNAME = 'wangping80'
@@ -60,4 +92,4 @@ if __name__ == '__main__':
     urls = login.LoginEssSystem(USERNAME,DEPARTID,PASSWORD,session)
     login.LoginService(urls, '局方停机','custserv', session)
     custinfos = GetCustinfoByNum('15611144389', session)
-    #GetCustPhotoById(custinfos['cust_id'])
+    GetCustPhotoIdById(custinfos['cust_id'],session)
