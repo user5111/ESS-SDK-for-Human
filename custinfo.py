@@ -5,6 +5,7 @@
 
 from io import BytesIO
 from PIL import Image
+from datetime import datetime, date, timedelta
 
 import requests
 from bs4 import BeautifulSoup
@@ -33,7 +34,7 @@ def GetCustinfoByNum(number, session):
         try:
                 custinfo['cust_id'] = soup.find(id='PSPT_ID')['value']
                 custinfo['cust_name'] = soup.find(id='CUST_NAME')['value']
-                custinfo['cust_address'] = soup.find(id='PSPT_ADDR')['value']
+                custinfo['open_date'] = soup.find(id='OPEN_DATE')['value']
                 #print(custinfo)
                 return custinfo
         except Exception as e:
@@ -135,13 +136,51 @@ def GetTradeId(serial_number, accptime, session):
                 return tradeid
         except:
                 return tradeid
+
+def GetTradeIdPro(serial_number, accptime, session):
+        date = datetime.strptime(accptime, "%Y-%m-%d")
+        start_date = (date-timedelta(days=55)).strftime('%Y-%m-%d')
+        print(start_date)
+        finish_date = (date+timedelta(days=35)).strftime('%Y-%m-%d')
+        print(finish_date)
+        try:
+                r = session.post(
+                        'https://123.125.98.209/custserv',
+                        headers = {'Referer': 'https://123.125.98.209/custserv',
+                                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                                   'x-requested-with':'XMLHttpRequest',
+                                   'Accept-Encoding':'gzip,deflate',
+                                   'Accept':'text/javascript, text/html, application/xml, text/xml, */*',
+                                   'x-portotype-version':'1.6.1',
+                                   'Cache-Control':'no-cache'
+                                   },
+                        params = {'service':'direct/1/personalserv.integratequerytrade.QueryHTradeInfo/operationquery'},
+                        data = {
+                                'X_GETMODE':'1',
+                                'TRADE_TYPE_CODE':'10',
+                                'SEREIAL_NUMBER':serial_number,
+                                'START_DATE_HIS':start_date,
+                                'FINISH_DATE_HIS':finish_date,
+                                'BOOK_PARAM':'N',
+                                'cond_PAGE_NUM':'1',
+                                'cond_PER_PAGE_MUN':'10',
+                                },
+                        verify = False
+                        )
+                soup = BeautifulSoup(r.text,'lxml')
+                name = soup.find(id='theTableName')
+                print(name)
+        except:
+                return "ERROR"
+                
+                
         
 def GetCustLivePhotoByTradeId(TradeId, session, fileaddr='/Users/wangwentao/Desktop/new-id/'):
         try:
                 r = session.post(
                         'https://123.125.98.209/custserv',
                         headers = {'Referer': 'https://123.125.98.209/'},
-                        params = {'service'	: 'swallow/personalserv.print.QueryUserPhoto/qryPhotoInfobytrade/1'},
+                        params = {'service': 'swallow/personalserv.print.QueryUserPhoto/qryPhotoInfobytrade/1'},
                         data = {
                                 'accptime':'2017-05-06',
                                 'TID': TradeId,
